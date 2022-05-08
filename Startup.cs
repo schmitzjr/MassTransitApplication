@@ -35,10 +35,13 @@ namespace MassTransitApplication
             {
                 trans.UsingRabbitMq((ctx, con) =>
                 {
-                    con.Host(Configuration.GetConnectionString("RabbitMq"));
+                    con.Host(Configuration.GetConnectionString("AMQPUrl"), cred => 
+                    {
+                        cred.Username(Configuration.GetConnectionString("AMQPUser"));
+                        cred.Password(Configuration.GetConnectionString("AMQPPassword"));
+                    });
                 });
             });
-            
             #endregion
             #region MassTransitConsumers
             var busControl = Bus.Factory.CreateUsingRabbitMq(cfg => 
@@ -47,12 +50,7 @@ namespace MassTransitApplication
                 {
                     e.Consumer<CustomerCreatedConsumer>();
                 });
-                cfg.ReceiveEndpoint("mailList-new-customers", e => 
-                {
-                    e.Consumer<CustomerMailListConsumer>();
-                });
             });
-
             busControl.StartAsync();
             #endregion
 
@@ -74,7 +72,7 @@ namespace MassTransitApplication
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MassTransitApplication v1"));
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
