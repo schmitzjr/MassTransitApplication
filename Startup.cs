@@ -31,7 +31,7 @@ namespace MassTransitApplication
 
         public void ConfigureServices(IServiceCollection services)
         {
-            #region Mapper
+            #region Mapper configuration
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MappingProfile());
@@ -39,7 +39,7 @@ namespace MassTransitApplication
             services.AddSingleton(config.CreateMapper());
             #endregion
 
-            #region MassTransit
+            #region MassTransit configuration
             services.AddMassTransit(trans =>
             {
                 trans.AddDelayedMessageScheduler();
@@ -68,11 +68,11 @@ namespace MassTransitApplication
                 });
             });
             #endregion
-            
 
             services.AddScoped<ICreateCustomerService, CreateCustomerService>();
 
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MassTransitApplication", Version = "v1" });
@@ -87,6 +87,7 @@ namespace MassTransitApplication
             }
 
             app.UseSwagger();
+            
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MassTransitApplication v1"));
 
             app.UseRouting();
